@@ -31,6 +31,29 @@ app.get('/api/v1/tours', (req, res) => {
   });
 });
 
+app.get('/api/v1/tours/:id', (req, res) => {
+  console.log(req.params);
+
+  const id = req.params.id * 1;
+
+  const tour = tours.find((el) => el.id === id);
+
+  // if (id > tours.length) {
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+});
+
 // post
 app.post('/api/v1/tours', (req, res) => {
   // console.log(req.body);
@@ -52,6 +75,66 @@ app.post('/api/v1/tours', (req, res) => {
   );
 });
 
+// patch
+app.patch('/api/v1/tours/:id', (req, res) => {
+  const id = req.params.id * 1;
+
+  const tour = tours.find((el) => el.id === id);
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  const newTours = tours.map((item) => {
+    if (item.id === id) {
+      return { ...item, ...req.body };
+    }
+    return item;
+  });
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(newTours),
+    (err) => {
+      res.status(200).json({
+        status: 'success',
+        data: {
+          tour: newTours.find((el) => el.id === id),
+        },
+      });
+    },
+  );
+});
+
+// delete
+app.delete('/api/v1/tours/:id', (req, res) => {
+  const id = req.params.id * 1;
+
+  const tour = tours.find((el) => el.id === id);
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  const newTours = tours.filter((item) => item.id !== id);
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(newTours),
+    (err) => {
+      res.status(204).json({
+        status: 'success',
+        data: null,
+      });
+    },
+  );
+});
+
+// app listen
 const port = 3000;
 app.listen(port, () => {
   console.log(`App running on port ${port}...`);
