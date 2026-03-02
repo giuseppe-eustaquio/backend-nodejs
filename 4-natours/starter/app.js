@@ -11,10 +11,16 @@ const app = express();
 // middlewares
 
 // 3rd party middleware
-app.use(morgan('dev'));
+console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 // built-in (express.json())
 app.use(express.json());
+
+// built in static
+app.use(express.static(`${__dirname}/public`));
 
 // own middleware
 app.use((req, res, next) => {

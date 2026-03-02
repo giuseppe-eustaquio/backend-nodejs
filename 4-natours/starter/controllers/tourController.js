@@ -4,6 +4,7 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
 );
 
+// checkID
 exports.checkID = (req, res, next, val) => {
   console.log(`val is ${val} and req params id is ${req.params.id}`);
   const tour = tours.find((el) => String(el.id) === req.params.id);
@@ -14,6 +15,21 @@ exports.checkID = (req, res, next, val) => {
       message: 'Invalid ID',
     });
   }
+  next();
+};
+
+// checkBody
+
+exports.checkBody = (req, res, next) => {
+  console.log('checkBody ran first!');
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'missing name or price',
+    });
+  }
+  console.log('checkBody ran');
+
   next();
 };
 
